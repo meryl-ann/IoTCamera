@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -22,9 +23,16 @@ import com.example.iotcamera.ml.MaskDetector;
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.Session;
+import ch.ethz.ssh2.StreamGobbler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,12 +40,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int pic_id = 123;
     // Define the button and imageview type variable
     Button camera_open_id;
+    Button temp_check_id;
     ImageView click_image_id;
     TextView result;
     TextView prediction;
+    TextView temp;
 
 
     int imageSize=224;
+    String output_value="";
 
 
 
@@ -49,9 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
         // By ID we can get each component which id is assigned in XML file get Buttons and imageview.
         camera_open_id = findViewById(R.id.camera_button);
+        temp_check_id= findViewById(R.id.temp_button);
         click_image_id = findViewById(R.id.click_image);
         result= findViewById(R.id.result);
         prediction=findViewById(R.id.prediction);
+        temp=findViewById(R.id.temp_value);
 
         // Camera_open button is for open the camera and add the setOnClickListener in this button
         camera_open_id.setOnClickListener(new View.OnClickListener() {
@@ -66,8 +79,68 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        temp_check_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AsyncTask<Integer, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Integer... params) {
+                        run("python xxx");
+                        // Add code to fetch data via SSH
+                        return null;
+                    }
+                    @Override
+                    protected void onPostExecute(Void v) {
+                        temp.setText(output_value);
+
+                        // Add code to preform actions after doInBackground
+                    }
+                }.execute(1);
 
 
+            }
+        });
+
+
+    }
+
+    public void run (String command) {
+        String hostname = "169.254.250.27";
+        String username = "pi";
+        String password = "raspberry";
+
+        StringBuilder output = new StringBuilder();
+
+        try
+        {
+            Connection conn = new Connection(hostname); //init connection
+            conn.connect(); //start connection to the hostname
+            boolean isAuthenticated = conn.authenticateWithPassword(username,
+                    password);
+            if (isAuthenticated == false)
+                throw new IOException("Authentication failed.");
+            Session sess = conn.openSession();
+            sess.execCommand(command);
+            InputStream stdout = new StreamGobbler(sess.getStdout());
+            BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
+//reads text
+            while (true){
+                String line = br.readLine(); // read line
+                if (line == null)
+                    break;
+                output.append(line);
+                System.out.println(line);
+            }
+            output_value=output.toString();
+
+            /* Show exit status, if available (otherwise "null") */
+            System.out.println("ExitCode: " + sess.getExitStatus());
+            sess.close(); // Close this session
+            conn.close();
+        }
+        catch (IOException e)
+        { e.printStackTrace(System.err);
+            System.exit(2); }
     }
 
     public void classifyImage(Bitmap image){
@@ -124,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Classify image failed:" +e.getMessage());
         }
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 

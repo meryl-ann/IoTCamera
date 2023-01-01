@@ -2,4 +2,6 @@
     <string name="app_name">IoTCamera</string>
     <string name="classify">Classify</string>
     <string name="open_camera">Open Camera</string>
+    <string name="check_temperature">Check Temperature</string>
+    <string name="img_thumbnail">img Thumbnail</string>
 </resources>
