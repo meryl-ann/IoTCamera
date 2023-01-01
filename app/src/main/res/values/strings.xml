@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">IoTCamera</string>
+    <string name="classify">Classify</string>
+    <string name="open_camera">Open Camera</string>
 </resources>
