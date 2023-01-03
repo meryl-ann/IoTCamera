@@ -85,13 +85,13 @@ public class MainActivity extends AppCompatActivity {
                 new AsyncTask<Integer, Void, Void>(){
                     @Override
                     protected Void doInBackground(Integer... params) {
-                        run("python xxx");
+                        run("python Desktop/Face-Mask-Detection-master/temp/temp_dataset.py");
                         // Add code to fetch data via SSH
                         return null;
                     }
                     @Override
                     protected void onPostExecute(Void v) {
-                        temp.setText(output_value);
+                        temp.setText(output_value + "°C");
 
                         // Add code to preform actions after doInBackground
                     }
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void run (String command) {
-        String hostname = "169.254.250.27";
+        String hostname = "172.20.10.3";
         String username = "pi";
         String password = "raspberry";
 
@@ -128,10 +128,11 @@ public class MainActivity extends AppCompatActivity {
                 String line = br.readLine(); // read line
                 if (line == null)
                     break;
-                output.append(line);
+                output.append(line); //stores output in StringBuilder variable
                 System.out.println(line);
             }
-            output_value=output.toString();
+            output_value=output.toString(); //convert to string, used in function
+            System.out.println("Output" + output_value); //debug
 
             /* Show exit status, if available (otherwise "null") */
             System.out.println("ExitCode: " + sess.getExitStatus());
