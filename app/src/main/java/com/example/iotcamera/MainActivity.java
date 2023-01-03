@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void run (String command) {
-        String hostname = "172.20.10.3";
+        String hostname = "192.168.208.117"; //Tanmay's Phone Hotspot (change for any other network
         String username = "pi";
         String password = "raspberry";
 

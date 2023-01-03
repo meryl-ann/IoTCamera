@@ -4,4 +4,5 @@
     <string name="open_camera">Open Camera</string>
     <string name="check_temperature">Check Temperature</string>
     <string name="img_thumbnail">img Thumbnail</string>
+    <string name="check_mask_and_temperature">Check Mask and Temperature</string>
 </resources>
