@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void run (String command) {
-        String hostname = "169.254.250.27";
+        String hostname = "172.20.10.3";
         String username = "pi";
         String password = "raspberry";
 
