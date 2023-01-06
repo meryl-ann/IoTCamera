@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -32,6 +33,9 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         scanAgain=findViewById(R.id.scan_again_button);
 
+        MediaPlayer approve=MediaPlayer.create(this, R.raw.good);
+        MediaPlayer deny= MediaPlayer.create(this, R.raw.error);
+
         Intent confirmation=getIntent();
         int mask_id=confirmation.getIntExtra("mask",1);
         String temp_string=confirmation.getStringExtra("temperature");
@@ -41,21 +45,25 @@ public class ConfirmationActivity extends AppCompatActivity {
         //Evaluation
 
         if(mask_id==0 & temp_int<38) {
+            approve.start();
             confirmationText.setText("Approved");
             confirmationText.setTextColor(Color.parseColor("#01ff00"));
             reasonText.setText("Looks good! Please proceed!");
         }
         else if(mask_id==1 & temp_int<38){
+            deny.start();
             confirmationText.setText("Denied");
             confirmationText.setTextColor(Color.parseColor("#ff0000"));
             reasonText.setText("Please wear a mask!");
         }
         else if(mask_id==0 & temp_int>38){
+            deny.start();
             confirmationText.setText("Denied");
             confirmationText.setTextColor(Color.parseColor("#ff0000"));
             reasonText.setText("You're burning up! Please seek medical attention!");
         }
         else if(mask_id==1 & temp_int>38){
+            deny.start();
             confirmationText.setText("Denied");
             confirmationText.setTextColor(Color.parseColor("#ff0000"));
             reasonText.setText("Please wear a mask! You have a fever!");
