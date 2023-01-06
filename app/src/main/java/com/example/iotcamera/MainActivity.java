@@ -2,6 +2,7 @@ package com.example.iotcamera;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     // Define the button and imageview type variable
     Button camera_open_id;
     Button temp_check_id;
+    Button proceed;
     ImageView click_image_id;
     TextView result;
     TextView prediction;
@@ -48,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     int imageSize=224;
+    int maxPos=0;
+    boolean mask_check=false;
+    boolean temp_check=false;
     String output_value="";
 
 
@@ -65,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         result= findViewById(R.id.result);
         prediction=findViewById(R.id.prediction);
         temp=findViewById(R.id.temp_value);
+        proceed=findViewById(R.id.proceed_button);
 
         // Camera_open button is for open the camera and add the setOnClickListener in this button
         camera_open_id.setOnClickListener(new View.OnClickListener() {
@@ -89,14 +96,44 @@ public class MainActivity extends AppCompatActivity {
                         // Add code to fetch data via SSH
                         return null;
                     }
+                    @SuppressLint("StaticFieldLeak")
                     @Override
                     protected void onPostExecute(Void v) {
                         temp.setText(output_value + "°C");
+                        temp_check=true;
+
 
                         // Add code to preform actions after doInBackground
                     }
                 }.execute(1);
 
+
+            }
+        });
+
+        proceed.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                System.out.println(mask_check);
+                System.out.println(temp_check);
+
+                if(mask_check&temp_check){
+                    int mask_id=maxPos;
+                    String temperature=output_value;
+                    Intent confirmation=new Intent(MainActivity.this, ConfirmationActivity.class);
+                    confirmation.putExtra("mask", mask_id);
+                    confirmation.putExtra("temperature", temperature);
+                    startActivity(confirmation);
+                }
+                else{
+                    Context context=getApplicationContext();
+                    CharSequence text="Please scan mask and temperature first!";
+                    int duration= Toast.LENGTH_SHORT;
+                    Toast error_popup=Toast.makeText(context,text,duration);
+                    error_popup.show();
+
+                }
 
             }
         });
@@ -178,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
             float[] predictions =outputFeature0.getFloatArray();
 
-            int maxPos=0;
+
             float maxPrediction=0;
             for(int i=0;i<predictions.length;i++){
                 if(predictions[i]>maxPrediction){
@@ -189,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
             String[] labels={"Mask","No Mask"};
             result.setText(labels[maxPos]+" detected");
             prediction.setText(String.format("%2f", maxPrediction*100f));
+            mask_check=true;
 
 
             // Releases model resources if no longer used.
