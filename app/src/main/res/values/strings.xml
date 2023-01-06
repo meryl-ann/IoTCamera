@@ -5,4 +5,7 @@
     <string name="check_temperature">Check Temperature</string>
     <string name="img_thumbnail">img Thumbnail</string>
     <string name="check_mask_and_temperature">Check Mask and Temperature</string>
+    <string name="continue">Continue</string>
+    <string name="proceed">Proceed</string>
+    <string name="scan_again">Scan again</string>
 </resources>
