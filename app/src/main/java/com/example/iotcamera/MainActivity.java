@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
     // Define the pic id
     private static final int pic_id = 123;
     // Define the button and imageview type variable
-    Button camera_open_id;
-    Button temp_check_id;
+    Button scan_id;
+   // Button temp_check_id;
     Button proceed;
     ImageView click_image_id;
     TextView result;
@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // By ID we can get each component which id is assigned in XML file get Buttons and imageview.
-        camera_open_id = findViewById(R.id.camera_button);
-        temp_check_id= findViewById(R.id.temp_button);
+        scan_id = findViewById(R.id.scan_button);
+        //temp_check_id= findViewById(R.id.temp_button);
         click_image_id = findViewById(R.id.click_image);
         result= findViewById(R.id.result);
         prediction=findViewById(R.id.prediction);
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         proceed=findViewById(R.id.proceed_button);
 
         // Camera_open button is for open the camera and add the setOnClickListener in this button
-        camera_open_id.setOnClickListener(new View.OnClickListener() {
+        scan_id.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
@@ -84,9 +84,26 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     requestPermissions(new String[]{Manifest.permission.CAMERA},100);
                 }
+                new AsyncTask<Integer, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Integer... params) {
+                        run("python Desktop/Face-Mask-Detection-master/temp/temp_dataset.py");
+                        // Add code to fetch data via SSH
+                        return null;
+                    }
+                    @SuppressLint("StaticFieldLeak")
+                    @Override
+                    protected void onPostExecute(Void v) {
+                        temp.setText(output_value + "°C");
+                        temp_check=true;
+
+
+                        // Add code to preform actions after doInBackground
+                    }
+                }.execute(1);
             }
         });
-        temp_check_id.setOnClickListener(new View.OnClickListener() {
+      /*  temp_check_id.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new AsyncTask<Integer, Void, Void>(){
@@ -109,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-        });
+        }); */
 
         proceed.setOnClickListener(new View.OnClickListener()
         {
